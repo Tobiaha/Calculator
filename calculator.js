@@ -9,56 +9,47 @@ const deleteButton = document.getElementById("deleteBtn");
 const equalButton = document.getElementById("equalBtn");
 
 let opArray = [];
-let firstNumber = "";
-let lastNumber = "";
-let lastNumTurn = false;
+let firstNum = "";
+let lastNum = "";
+
+let total = 0;
 
 let operator = "";
 
-const add = (a, b) => a + b;
-
-const subtract = (a, b) => a - b;
-
-const divide = (a, b) => a / b;
-
-const multiply = (a, b) => a * b;
-
-function calculate(firstNumber, lastNumber) {
-  let total = 0;
-  const firstNum = parseFloat(firstNumber);
-  const lastNum = parseFloat(lastNumber);
-
+function calculate() {
+  const num1 = Number(firstNum);
+  const num2 = Number(lastNum);
   switch (operator) {
     case "+":
-      total = firstNum + lastNum;
+      total = num1 + num2;
       break;
     case "-":
-      total = firstNum - lastNum;
+      total = num1 - num2;
       break;
     case "*":
-      total = firstNum * lastNum;
+      total = num1 * num2;
       break;
     case "/":
-      total = firstNum / lastNum;
+      total = num1 / num2;
       break;
   }
-  console.log(total);
-  firstNum = total.toString();
+  console.log("total number " + total);
+  firstNum = total;
   lastNum = "";
+
   operator = "";
-  lastNumTurn = false; // ready to type new number
 }
 
 numButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     const numText = e.target.textContent;
-    if (!lastNumTurn && !operator) {
-      firstNumber += numText;
 
-      console.log("first num turn now");
-    } else if (!operator && lastNumTurn) {
-      lastNumber += numText;
-      console.log("lastnumturn now");
+    if (!operator) {
+      firstNum += numText;
+      console.log("first num turn now " + firstNum);
+    } else {
+      lastNum += numText;
+      console.log("lastnum turn now " + lastNum);
     }
 
     display.value += numText;
@@ -78,15 +69,15 @@ operatorButtons.forEach((btn) => {
     opArray.push(op);
     console.log(opArray);
 
-    if (operator && lastNumTurn) {
-      firstNumber = display.value; // Everything before operator
+    if (firstNum && lastNum) {
+      calculate();
+      firstNum = total.toString();
+      lastNum = "";
+      display.value = firstNum;
 
-      console.log(firstNumber + " In operator function");
-    } else {
-      lastNumber = display.value.slice(firstNumber.length + 1);
-      calculate(firstNumber, lastNumber);
-      firstNumber = total;
+      console.log(firstNum + " In operator function");
     }
+
     operator = op;
     display.value += op;
   });
