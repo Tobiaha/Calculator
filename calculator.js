@@ -16,6 +16,7 @@ let total = 0;
 
 let operator = "";
 
+// Since the numbers are strings we convert them for calculation
 function calculate() {
   const num1 = Number(firstNum);
   const num2 = Number(lastNum);
@@ -30,13 +31,12 @@ function calculate() {
       total = num1 * num2;
       break;
     case "/":
-      total = num1 / num2;
+      total = num2 === 0 ? "Error" : num1 / num2;
       break;
   }
   console.log("total number " + total);
   firstNum = total;
   lastNum = "";
-
   operator = "";
 }
 
@@ -58,14 +58,16 @@ numButtons.forEach((btn) => {
 
 operatorButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
-    let operators = ["+", "-", "*", "/"];
-    let op = e.target.textContent;
+    const op = e.target.textContent;
     const lastChar = display.value.slice(-1);
 
-    if (operators.includes(lastChar)) {
+    if (!firstNum) {
       return;
     }
 
+    if ("+-*/".includes(lastChar)) return;
+
+    // logging to array to see operators
     opArray.push(op);
     console.log(opArray);
 
@@ -82,3 +84,33 @@ operatorButtons.forEach((btn) => {
     display.value += op;
   });
 });
+
+clearButton.addEventListener("click", () => {
+  firstNum = "";
+  lastNum = "";
+  operator = "";
+  total = 0;
+  display.value = "";
+  console.log("Allclear");
+});
+
+deleteButton.addEventListener("click", () => {
+  if (!display.value) return;
+
+  const deleteChar = display.value.slice(-1);
+
+  display.value = display.value.slice(0, -1);
+
+  if ("+-*/".includes(deleteChar)) {
+    operator = "";
+    return;
+  }
+
+  if (operator) {
+    lastNum = lastNum.slice(0, -1);
+  } else {
+    firstNum = firstNum.slice(0, -1);
+  }
+});
+
+//todo decimal, equals, keyboard?
