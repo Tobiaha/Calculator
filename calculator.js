@@ -24,7 +24,8 @@ const equalButton = document.getElementById("equalBtn");
 equalButton.addEventListener("click", equals);
 
 // opArray is just a way to see all used operators
-let opArray = [];
+// let opArray = [];
+
 let firstNum = "";
 let lastNum = "";
 
