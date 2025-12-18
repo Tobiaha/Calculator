@@ -113,4 +113,14 @@ deleteButton.addEventListener("click", () => {
   }
 });
 
+equalButton.addEventListener("click", () => {
+  calculate();
+  display.value = total;
+
+  firstNum = total.toString();
+  lastNum = "";
+  operator = "";
+});
+
+decimalButton.addEventListener("click", () => {});
 //todo decimal, equals, keyboard?
