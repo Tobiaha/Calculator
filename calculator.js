@@ -1,12 +1,27 @@
 "use strict";
 const display = document.getElementById("display");
-const numButtons = document.querySelectorAll("button.number");
-const operatorButtons = document.querySelectorAll("button.operator");
 
+const numButtons = document.querySelectorAll("button.number");
+numButtons.forEach((btn) =>
+  btn.addEventListener("click", (e) => number(e.target.textContent))
+);
+const operatorButtons = document.querySelectorAll("button.operator");
+operatorButtons.forEach((btn) =>
+  btn.addEventListener("click", (e) => operate(e.target.textContent))
+);
 const decimalButton = document.getElementById("decimalBtn");
+decimalButton.addEventListener("click", () => {
+  decimalHandler(".");
+});
+
 const clearButton = document.getElementById("clearBtn");
+clearButton.addEventListener("click", clear);
+
 const deleteButton = document.getElementById("deleteBtn");
+deleteButton.addEventListener("click", del);
+
 const equalButton = document.getElementById("equalBtn");
+equalButton.addEventListener("click", equals);
 
 // opArray is just a way to see all used operators
 let opArray = [];
@@ -41,83 +56,81 @@ function calculate() {
     default:
       return null;
   }
-  console.log("total number " + total);
+
+  // console.log("total number " + total);
+
   firstNum = total;
   lastNum = "";
   operator = "";
 }
 
-numButtons.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    const numText = e.target.textContent;
+function number(numText) {
+  if (!operator) {
+    firstNum += numText;
+    // console.log("first num turn now " + firstNum);
+  } else {
+    lastNum += numText;
+    // console.log("lastnum turn now " + lastNum);
+  }
 
-    if (!operator) {
-      firstNum += numText;
-      console.log("first num turn now " + firstNum);
-    } else {
-      lastNum += numText;
-      console.log("lastnum turn now " + lastNum);
-    }
+  display.value += numText;
+}
 
-    display.value += numText;
-  });
-});
+function operate(op) {
+  const lastChar = display.value.slice(-1);
 
-operatorButtons.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    const op = e.target.textContent;
-    const lastChar = display.value.slice(-1);
+  if (!firstNum) {
+    return;
+  }
 
-    if (!firstNum) {
-      return;
-    }
+  if ("+-*/".includes(lastChar)) return;
 
-    if ("+-*/".includes(lastChar)) return;
+  /* logging to array to see operators used
+   
+  opArray.push(op);
+  console.log(opArray); */
 
-    // logging to array to see operators
-    opArray.push(op);
-    console.log(opArray);
+  if (firstNum && lastNum) {
+    calculate();
+    firstNum = total.toString();
+    lastNum = "";
+    display.value = firstNum;
 
-    if (firstNum && lastNum) {
-      calculate();
-      firstNum = total.toString();
-      lastNum = "";
-      display.value = firstNum;
+    // console.log(firstNum + " In operator function");
+  }
 
-      console.log(firstNum + " In operator function");
-    }
+  operator = op;
+  display.value += op;
+}
 
-    operator = op;
-    display.value += op;
-  });
-});
+function decimalHandler() {
+  const currentNum = operator ? lastNum : firstNum;
 
-decimalButton.addEventListener("click", (e) => {
-  const decimal = e.target.textContent;
-  let currentNum = operator ? lastNum : firstNum;
-  if (decimal === "." && currentNum.includes(".")) return;
+  // no double decimals
+  if (currentNum.includes(".")) return;
 
-  if (decimal === "." && currentNum === "") return;
+  // have to put a number before decimal
+  if (currentNum === "") return;
 
   if (operator) {
-    lastNum += decimal;
-    display.value += ".";
+    lastNum += ".";
   } else {
-    firstNum += decimal;
-    display.value += ".";
+    firstNum += ".";
   }
-});
+  display.value += ".";
+}
 
-clearButton.addEventListener("click", () => {
+function clear() {
   firstNum = "";
   lastNum = "";
   operator = "";
   total = 0;
   display.value = "";
-  console.log("Allclear");
-});
 
-deleteButton.addEventListener("click", () => {
+  // console.log("Allclear");
+}
+
+function del() {
   if (!display.value) return;
 
   const deleteChar = display.value.slice(-1);
@@ -134,10 +147,10 @@ deleteButton.addEventListener("click", () => {
   } else {
     firstNum = firstNum.slice(0, -1);
   }
-});
+}
 
-equalButton.addEventListener("click", () => {
-  if (firstNum !== "" && lastNum !== "") {
+function equals() {
+  if (firstNum !== "" && operator && lastNum !== "") {
     calculate();
     firstNum = total.toString();
     display.value = total;
@@ -145,5 +158,35 @@ equalButton.addEventListener("click", () => {
     operator = "";
   } else {
     display.value = firstNum;
+  }
+}
+
+// keyboard support
+document.addEventListener("keydown", (e) => {
+  const key = e.key;
+
+  if (/[0-9]/.test(key)) {
+    number(key);
+  }
+
+  if (e.key === ".") {
+    decimalHandler(".");
+  }
+
+  if ("+-*/".includes(key)) {
+    operate(key);
+  }
+
+  if (e.key === "Enter" || key === "=") {
+    e.preventDefault();
+    equals();
+  }
+
+  if (key === "Backspace") {
+    del();
+  }
+
+  if (key === "Escape") {
+    clear();
   }
 });
