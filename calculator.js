@@ -8,6 +8,7 @@ const clearButton = document.getElementById("clearBtn");
 const deleteButton = document.getElementById("deleteBtn");
 const equalButton = document.getElementById("equalBtn");
 
+// opArray is just a way to see all used operators
 let opArray = [];
 let firstNum = "";
 let lastNum = "";
@@ -18,8 +19,12 @@ let operator = "";
 
 // Since the numbers are strings we convert them for calculation
 function calculate() {
+  if (!firstNum || !operator || !lastNum) {
+    return null;
+  }
   const num1 = Number(firstNum);
   const num2 = Number(lastNum);
+
   switch (operator) {
     case "+":
       total = num1 + num2;
@@ -33,6 +38,8 @@ function calculate() {
     case "/":
       total = num2 === 0 ? "Error" : num1 / num2;
       break;
+    default:
+      return null;
   }
   console.log("total number " + total);
   firstNum = total;
@@ -85,6 +92,22 @@ operatorButtons.forEach((btn) => {
   });
 });
 
+decimalButton.addEventListener("click", (e) => {
+  const decimal = e.target.textContent;
+  let currentNum = operator ? lastNum : firstNum;
+  if (decimal === "." && currentNum.includes(".")) return;
+
+  if (decimal === "." && currentNum === "") return;
+
+  if (operator) {
+    lastNum += decimal;
+    display.value += ".";
+  } else {
+    firstNum += decimal;
+    display.value += ".";
+  }
+});
+
 clearButton.addEventListener("click", () => {
   firstNum = "";
   lastNum = "";
@@ -114,13 +137,13 @@ deleteButton.addEventListener("click", () => {
 });
 
 equalButton.addEventListener("click", () => {
-  calculate();
-  display.value = total;
-
-  firstNum = total.toString();
-  lastNum = "";
-  operator = "";
+  if (firstNum !== "" && lastNum !== "") {
+    calculate();
+    firstNum = total.toString();
+    display.value = total;
+    lastNum = "";
+    operator = "";
+  } else {
+    display.value = firstNum;
+  }
 });
-
-decimalButton.addEventListener("click", () => {});
-//todo decimal, equals, keyboard?
